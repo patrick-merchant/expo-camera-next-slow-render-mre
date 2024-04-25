@@ -1,10 +1,11 @@
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera/next';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import 'expo-dev-client';
 
 export default function App() {
-  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [showCameraView, setShowCameraView] = useState(false);
 
   if (!permission) {
     // Camera permissions are still loading
@@ -21,20 +22,11 @@ export default function App() {
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
   return (
-    <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
-    </View>
+      showCameraView ? <View style={styles.container}>
+      <CameraView style={styles.camera} facing={'back'} />
+      <Button onPress={() => setShowCameraView(false)} title={'Hide Camera'} />
+    </View> : <View style={{flex: 1, justifyContent: 'center'}}><Button onPress={() => setShowCameraView(true)} title={'Show Camera'} /></View>
   );
 }
 
@@ -45,21 +37,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    height: '100%',
+    width: '100%'
   },
 });
